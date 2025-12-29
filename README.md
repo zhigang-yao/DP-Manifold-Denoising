@@ -38,11 +38,6 @@ are explicitly recorded in the code to facilitate reproducibility.
 
 ## Citation
 
-If you use this code or build upon it, please cite:
-
-> Author(s).  
-> *Differentially Private Manifold Denoising with Local Geometry Preservation.*  
-> Manuscript under review.
 
 ---
 
