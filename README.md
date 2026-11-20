@@ -1,6 +1,10 @@
 # Differentially Private Manifold Denoising
 
-This repository contains the simulation code and committed results for *Differentially Private Manifold Denoising*. The main method, **DP-MD-S**, uses a private reference dataset to correct public query points toward an unknown manifold. For the statistical methodology and privacy guarantees, see the accompanying manuscript.
+This repository contains the simulation code and committed results for *Differentially Private Manifold Denoising*. The main method, **DP-MD-S**, uses a private reference dataset to correct public query points toward an unknown manifold. For the statistical methodology and privacy guarantees, see the [paper on arXiv](https://arxiv.org/abs/2604.00942).
+
+## Paper
+
+Jiaqi Wu, Yiqing Sun, and Zhigang Yao. *Differentially Private Manifold Denoising*. arXiv:2604.00942, 2026. [Read the paper](https://arxiv.org/abs/2604.00942).
 
 ## Method overview
 
@@ -94,3 +98,23 @@ uv run python -m modules.baselines.external_mf_sources --install
 ```
 
 Restricted UK Biobank data are not included in this simulation code repository.
+
+## Citation
+
+If you use this repository, please cite the paper:
+
+```bibtex
+@misc{wu2026differentially,
+  title={Differentially Private Manifold Denoising},
+  author={Wu, Jiaqi and Sun, Yiqing and Yao, Zhigang},
+  year={2026},
+  eprint={2604.00942},
+  archivePrefix={arXiv},
+  primaryClass={cs.LG},
+  url={https://arxiv.org/abs/2604.00942}
+}
+```
+
+## License
+
+Copyright (c) 2026 Yaogroup. This repository is licensed under the [MIT License](LICENSE).
