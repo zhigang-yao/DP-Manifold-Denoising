@@ -1,0 +1,43 @@
+[
+  {
+    "D": 2,
+    "threshold": 2.6641802711939655,
+    "source": "archived_calibration/exp72_D2.json",
+    "source_sha256": "2ccdc9c9a7066622290d84ec86ebb8c0f04588cd4bcca7d5f5a93d63d4bd5800",
+    "seed_entropy": [
+      72,
+      138,
+      2,
+      0,
+      2
+    ],
+    "source_label": "exp72"
+  },
+  {
+    "D": 3,
+    "threshold": 2.68979213668736,
+    "source": "archived_calibration/exp72_D3.json",
+    "source_sha256": "ea277c5188357b5b62ee8e8b7276c3f045a272523bcf357baa5611e5974a995d",
+    "seed_entropy": [
+      72,
+      138,
+      2,
+      0,
+      3
+    ],
+    "source_label": "exp72"
+  },
+  {
+    "D": 4,
+    "threshold": 2.696104186698026,
+    "source": "archived_calibration/exp75_D4.json",
+    "source_sha256": "0fa00b927b6e9363e4b65cfb1b23ff93f2d839219e966ff9ba13605f43daf8fd",
+    "seed_entropy": [
+      73,
+      138,
+      2,
+      4
+    ],
+    "source_label": "exp75"
+  }
+]

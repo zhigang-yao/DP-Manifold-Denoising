@@ -1,0 +1,30 @@
+name: Smoke test
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.11'
+      - name: Install the locked environment
+        run: uv sync --locked
+      - name: Compile Python files
+        run: uv run python -m compileall -q modules geometry experiments results tests reproduce.py
+      - name: Test imports
+        run: |
+          uv run python -c "from modules.md.estimator import run; from modules.baselines.dp_pca.estimator import release_and_compare; from geometry.synthetic import generate; from experiments._shared.case_cells import units; from results._shared.plotting import stat; from results._shared.manifold_distance import distance; print('imports OK')"
+      - name: Static import and layout checks
+        run: uv run python -m unittest discover -s tests -p 'test_*.py'
+      - name: Validate Bash scripts
+        run: find experiments results -name '*.sh' -print0 | xargs -0 -n 1 bash -n
+      - name: Run one complete paper simulation unit
+        run: |
+          uv run python -m experiments._shared.case_cells run "$RUNNER_TEMP/dpmd-one-unit" trefoil_D5_n2000_e1_a0.08_s0.04_uniform_ball_r0
+          test -s "$RUNNER_TEMP/dpmd-one-unit/units/trefoil_D5_n2000_e1_a0.08_s0.04_uniform_ball_r0.json"
+      - name: Campaign manifest (9600 distinct units)
+        run: uv run python -m experiments._shared.case_cells --summary | tee summary.txt && grep -qE '^all \(distinct\) +9600$' summary.txt

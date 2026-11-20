@@ -1,0 +1,19 @@
+[project]
+name = "dp-md-simulation"
+version = "0.1.0"
+description = "Simulation reproducibility for differentially private manifold denoising"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+ "numpy==2.4.6",
+ "scipy==1.17.1",
+ "matplotlib==3.11.2",
+ "clarabel==0.11.1",
+ "psutil==7.2.2",
+ "scikit-learn==1.9.1",
+ "threadpoolctl==3.7.0",
+]
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+[tool.setuptools.packages.find]
+include = ["modules*", "geometry*", "experiments*", "results*"]

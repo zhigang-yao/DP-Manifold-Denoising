@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+data/
+results/_build/
+experiments/*/cells.txt
+*.log
+.DS_Store
+modules/baselines/external/
+*.egg-info/

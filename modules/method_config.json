@@ -1,0 +1,62 @@
+{
+ "method": {
+  "backend": "structured_shared",
+  "bandwidths": [
+   0.025,
+   0.03535533905932738,
+   0.05,
+   0.07071067811865477,
+   0.1,
+   0.14142135623730953,
+   0.2,
+   0.28284271247461906,
+   0.4
+  ],
+  "alpha0": 0.1,
+  "inner_B": 10,
+  "inner_estimator": "frobenius_cv",
+  "outer_R": 100,
+  "auxiliary_chunk_size": 16,
+  "quadrature_order": 128,
+  "pointwise_fallback": false,
+  "gate_threshold": null,
+  "psd_solver": "auto",
+  "psd_tol": 1e-10,
+  "psd_chunk_size": 128,
+  "memory_limit_gib": 6.0,
+  "auxiliary_seed": 918337,
+  "auxiliary_noise_model": "matched"
+ },
+ "dp_pca_reference_arms": [
+  {
+   "mode": "split",
+   "quantile": 0.5,
+   "role": "main",
+   "nu_draws": 10,
+   "alpha": 0.1
+  },
+  {
+   "mode": "split",
+   "quantile": 0.75,
+   "role": "sensitivity",
+   "nu_draws": 10,
+   "alpha": 0.1
+  },
+  {
+   "mode": "compose",
+   "quantile": 0.5,
+   "role": "sensitivity",
+   "nu_draws": 10,
+   "alpha": 0.1
+  },
+  {
+   "mode": "compose",
+   "quantile": 0.75,
+   "role": "sensitivity",
+   "nu_draws": 10,
+   "alpha": 0.1
+  }
+ ],
+ "delta": "n^-1.1",
+ "double_graph_alpha": 0.3
+}

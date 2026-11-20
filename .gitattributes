@@ -1,0 +1,4 @@
+# Preserve existing binary artifacts without content transformation.
+* -text
+# Shell scripts must use Unix line endings on all operating systems.
+*.sh text eol=lf
