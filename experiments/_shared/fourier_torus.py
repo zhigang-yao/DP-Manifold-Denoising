@@ -61,10 +61,10 @@ def sample_unit(n, Q, replicate, *, sigma=0.04, a=0.08):
     from geometry.noise import sample_uniform_ball_noise
     ref_theta = _rng(1, replicate, n).uniform(0, 2 * np.pi, size=(n, 2))
     clean, _ = embed(ref_theta)
-    latent_theta = _rng(3).uniform(0, 2 * np.pi, size=(Q, 2))
+    latent_theta = _rng(3, replicate).uniform(0, 2 * np.pi, size=(Q, 2))
     latent, tangent = embed(latent_theta)
     basis, _ = np.linalg.qr(tangent, mode="reduced")
-    g = _rng(4).standard_normal((Q, D))
+    g = _rng(4, replicate).standard_normal((Q, D))
     orthogonal = g - np.einsum("qdi,qi->qd", basis,
                               np.einsum("qdi,qd->qi", basis, g))
     length = np.linalg.norm(orthogonal, axis=1)

@@ -43,7 +43,7 @@ are explicit in SyntheticConfig rather than pretending to reuse old runs.
     embedding=manifolds._embedding("swiss_roll",D)
     raw=manifolds._sample_raw("swiss_roll",c.n,reference_rng)
     clean=((raw-np.asarray(meta["raw_center"]))*meta["scale"])@embedding.T
-    bank=make_query_bank("swiss_roll",c.Q,c.seed,[c.a],ambient_dimension=D)
+    bank=make_query_bank("swiss_roll",c.Q,c.seed*1000+c.replicate if c.replicate else c.seed,[c.a],ambient_dimension=D)
     noise=sample_uniform_ball_noise(c.n,D,c.sigma,noise_rng)
     return dict(reference=clean+noise,clean_reference=clean,
                 queries=bank["points"][c.a],latent=bank["base"],

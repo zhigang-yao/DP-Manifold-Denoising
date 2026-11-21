@@ -158,10 +158,10 @@ def generate(c: SyntheticConfig):
     emb=(np.eye(D,native_D) if D==native_D or c.geometry in ("double_graph","linked_tori","bowl4","swiss_roll_candidate")
          else np.linalg.qr(_rng(c.seed,c.geometry,0,7).standard_normal((D,native_D)))[0])
     clean,tangents=_native(c.geometry,c.n,_rng(c.seed,c.geometry,c.replicate,1))
-    latent,T=_native(c.geometry,c.Q,_rng(c.seed,c.geometry,0,3),interior=True)
+    latent,T=_native(c.geometry,c.Q,_rng(c.seed,c.geometry,c.replicate,3),interior=True)
     ref=clean@emb.T
     latent_ambient=latent@emb.T
-    g=_rng(c.seed,c.geometry,0,4).standard_normal((c.Q,D))
+    g=_rng(c.seed,c.geometry,c.replicate,4).standard_normal((c.Q,D))
     if c.geometry=="sphere3":
         g_native=g@emb
         tg_native=g_native-(g_native*latent).sum(axis=1)[:,None]*latent

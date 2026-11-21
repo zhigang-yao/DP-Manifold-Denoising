@@ -33,7 +33,7 @@ CASES = {
     'case2_n': ({'n_scan'}, CONNECTED),
     'case3_offset': ({'a_scan'}, CONNECTED),
     'case5_disconnected': ({'epsilon_scan', 'n_scan'}, ('linked_tori',)),
-    'case6_highd': ({'case6'}, ('trefoil', 'double_graph')),
+    'case6_highd': ({'case6'}, ('trefoil', 'bowl4')),
     'case7_fourier': ({'epsilon_scan', 'n_scan'}, ('fourier_torus',)),
     'app_noise_sigma': ({'sigma_scan', 'central_noise'}, CONNECTED),
     'app_extra_geometries': (set(), ()),  # EXTRA_CELLS

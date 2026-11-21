@@ -1,5 +1,7 @@
 # Case 4: joint / per-scale / per-query field release
 
-This case uses the frozen experiment drivers in `experiments/_shared/` and the algorithm in `modules/`. The final paper figure/table assets are under `results/case4_release/`. Numerical settings and seeds are inherited from the frozen campaign (2026-11-18, revision c).
+This case uses the frozen experiment drivers in `experiments/_shared/` and the algorithm in `modules/`. The final paper figure/table assets are under `results/case4_release/`. Numerical settings and seeds are those of the frozen campaign (2026-11-20), in which the public queries are redrawn for every reference repetition. The paper reports the trefoil knot and the torus; `run.sh` also runs the bowl (D=10), whose records are in the plotting data but not in the figure (`CASE4_GEOMS` in `results/_shared/plotting.py` selects the panels).
+
+Computation. `run.sh` uses the exact single-thread runner `experiments._shared.case4_release`. Some archived records were produced with `experiments._shared.case4_release_mt`, which takes the same arguments: with `DPMD_CHOLESKY_FIRST=1` the terminal positive-definiteness check uses a Cholesky factor instead of a full eigendecomposition (bit-identical output), and with `DPMD_RADIAL_INTERP=1` the radial covariances come from piecewise Chebyshev tables of the exact radial functions (relative error about 4e-15), optionally with multithreaded BLAS. Of the 2400 trefoil/torus records, 2046 are bit-identical to the exact runner and 354 used the interpolated tables (differences at most 1.4e-7 relative, identical selected bandwidths).
 
 Run: `uv run python reproduce.py --case case4_release`. To regenerate plots from the archived unit store, use `uv run python reproduce.py --plots`.

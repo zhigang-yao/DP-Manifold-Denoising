@@ -69,9 +69,9 @@ def generate_extra(geometry, n, Q, D, sigma, a, replicate):
     clean, _ = _curve(geometry, t)
     native = clean.shape[1]
     emb = np.linalg.qr(_rng(geometry, 0, 7).standard_normal((D, native)))[0]
-    latent, tangent = _curve(geometry, _sample_t(geometry, Q, _rng(geometry, 0, 3), query=True))
+    latent, tangent = _curve(geometry, _sample_t(geometry, Q, _rng(geometry, replicate, 3), query=True))
     latent, tangent = latent @ emb.T, tangent @ emb.T
-    g = _rng(geometry, 0, 4).standard_normal((Q, D))
+    g = _rng(geometry, replicate, 4).standard_normal((Q, D))
     normals = _unit(g - np.sum(g * tangent, axis=1, keepdims=True) * tangent)
     from geometry.noise import sample_uniform_ball_noise
     reference = clean @ emb.T
@@ -84,8 +84,8 @@ def generate_flat2(n, Q, D, sigma, a, replicate):
     from geometry.noise import sample_uniform_ball_noise
     emb = np.linalg.qr(_rng('flat2', 0, 7).standard_normal((D, 2)))[0]
     reference = _rng('flat2', replicate, 1).uniform(-1, 1, (n, 2)) @ emb.T
-    latent = _rng('flat2', 0, 3).uniform(-.8, .8, (Q, 2)) @ emb.T
-    g = _rng('flat2', 0, 4).standard_normal((Q, D))
+    latent = _rng('flat2', replicate, 3).uniform(-.8, .8, (Q, 2)) @ emb.T
+    g = _rng('flat2', replicate, 4).standard_normal((Q, D))
     normals = _unit(g - (g @ emb) @ emb.T)
     noise = sample_uniform_ball_noise(n, D, sigma, _rng('flat2', replicate, 2))
     return dict(reference=reference + noise, clean_reference=reference, queries=latent + a * normals,
@@ -104,8 +104,8 @@ def generate_swiss3(n, Q, D, sigma, a, replicate):
         tang = np.zeros((count, 3, D)); tang[:, :2, :3] = frames; tang[:, 2, 3] = 1.
         return x, tang
     reference, _ = roll(n, _rng('swiss3', replicate, 1), False)
-    latent, T = roll(Q, _rng('swiss3', 0, 3), True)
-    g = _rng('swiss3', 0, 4).standard_normal((Q, D))
+    latent, T = roll(Q, _rng('swiss3', replicate, 3), True)
+    g = _rng('swiss3', replicate, 4).standard_normal((Q, D))
     normals = _unit(g - np.einsum('qkd,qk->qd', T, np.einsum('qkd,qd->qk', T, g)))
     noise = sample_uniform_ball_noise(n, D, sigma, _rng('swiss3', replicate, 2))
     return dict(reference=reference + noise, clean_reference=reference, queries=latent + a * normals,
@@ -129,9 +129,9 @@ def generate_catenoid(n, Q, D, sigma, a, replicate):
     from geometry.noise import sample_uniform_ball_noise
     emb = np.linalg.qr(_rng('catenoid', 0, 7).standard_normal((D, 3)))[0]
     reference = _catenoid(n, _rng('catenoid', replicate, 1), CATENOID_H)[0] @ emb.T
-    latent, T = _catenoid(Q, _rng('catenoid', 0, 3), CATENOID_H - .1)
+    latent, T = _catenoid(Q, _rng('catenoid', replicate, 3), CATENOID_H - .1)
     latent, T = latent @ emb.T, T @ emb.T
-    g = _rng('catenoid', 0, 4).standard_normal((Q, D))
+    g = _rng('catenoid', replicate, 4).standard_normal((Q, D))
     normals = _unit(g - np.einsum('qkd,qk->qd', T, np.einsum('qkd,qd->qk', T, g)))
     noise = sample_uniform_ball_noise(n, D, sigma, _rng('catenoid', replicate, 2))
     return dict(reference=reference + noise, clean_reference=reference, queries=latent + a * normals,

@@ -91,7 +91,7 @@ uv run python reproduce.py --case case1_epsilon
 uv run python reproduce.py --plots
 ```
 
-For figure/table regeneration from saved runs, place the plotting data in `data/runs/`. Those run data are not included in the tracked source files; the committed figures and tables are in `results/`. To reproduce the SA-MF benchmarks, first install the verified upstream sources:
+For figure/table regeneration from saved runs, extract the `v2.0` plotting-data archive into `data/` to create `data/runs/`. Those run data are not included in the tracked source files; the committed figures and tables are in `results/`. To reproduce the SA-MF benchmarks, first install the verified upstream sources:
 
 ```bash
 uv run python -m modules.baselines.external_mf_sources --install

@@ -24,8 +24,8 @@ from modules.config import MethodConfig
 from modules.methods import run_all
 from geometry.synthetic import SyntheticConfig, generate
 
-GEOMETRY_ID = {"trefoil": 1, "torus": 2, "double_graph": 6}
-BASE_N = dict(trefoil=2000, torus=8000, double_graph=16000)
+GEOMETRY_ID = {"trefoil": 1, "torus": 2, "double_graph": 6, "bowl4": 8}
+BASE_N = dict(trefoil=2000, torus=8000, double_graph=16000, bowl4=16000)
 CASE4_DOUBLE_GRAPH_BOUND = 1.22
 EPSILON = 2.
 

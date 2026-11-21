@@ -27,7 +27,7 @@ METHOD = MethodConfig(backend='structured_shared', inner_B=10, inner_estimator='
 AMBIENT = dict(trefoil=5, torus=5, swiss_roll_candidate=5, linked_tori=5, double_graph=10, bowl4=10,
                fourier_torus=10, circle=5, affine=5, figure_eight=5, helix=5, flat2=5, swiss3=10, catenoid=5)
 NGRID = dict(trefoil=(1000, 2000, 4000, 8000), torus=(4000, 8000, 16000, 32000),
-             swiss_roll_candidate=(4000, 8000, 16000, 32000), linked_tori=(4000, 8000, 16000, 32000),
+             swiss_roll_candidate=(4000, 8000, 16000, 32000), linked_tori=(8000, 16000, 32000, 64000),
              double_graph=(8000, 16000, 32000, 64000), bowl4=(8000, 16000, 32000, 64000),
              fourier_torus=(8000, 16000, 32000, 64000))
 DEFAULT_N = {g: grid[1] for g, grid in NGRID.items()}
@@ -61,7 +61,7 @@ def build_manifest():
     for g in ('circle',) + EXTRA: add('extra_geometry', g, n=2000)
     for D in (10, 20, 30, 40, 50):
         add('case6', 'trefoil', n=8000, D=D)
-        add('case6', 'double_graph', n=16000, D=D)
+        add('case6', 'bowl4', n=16000, D=D)
     return dict(method=METHOD, pca=PCA_CONFIGS, cells=cells)
 
 

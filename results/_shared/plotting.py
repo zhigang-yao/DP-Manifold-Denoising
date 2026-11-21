@@ -40,6 +40,7 @@ METHODS = ('RAW', 'NP-MD-H', 'NP-MD-S', 'DP-MD-H', 'DP-MD-S')
 PCA = 'DP-PCA-split-q0.5-Ratio'
 EPSILONS = (1., 2., 4., 8.)
 TOP = .10  # Case 4 figure: y axis cut just above RAW (.08)
+CASE4_GEOMS = tuple(os.environ.get('CASE4_GEOMS', 'trefoil torus').split())  # Case 4 panels (paper: trefoil, torus)
 MODES = dict(structured_shared='Joint', structured_independent='Per-scale', structured_per_query='Per-query')
 EPS_LABEL = r'$\varepsilon$'
 LEGACY = os.environ.get('LEGACY') == '1'
@@ -120,7 +121,7 @@ def tables(groups, TAB):
     # D varies within the table, so the row label is the geometry name with its sample size only
     write_table(TAB / 'tab_app_highd.tex', ['Geometry', '$D$', *METHODS],
                 [(f'{name} ($n={n}$)', [[f'${D}$', *method_cells(groups[key(g, D=D, n=n, epsilon=2.)])] for D in (10, 20, 30, 40, 50)])
-                 for g, n, name in (('trefoil', 8000, 'Trefoil'), ('double_graph', 16000, 'Double-curvature graph'))])
+                 for g, n, name in (('trefoil', 8000, 'Trefoil'), ('bowl4', 16000, 'Bowl'))])
 
 
 def manifold_table(names, TAB):
@@ -168,14 +169,14 @@ def case4(root, d10_csv):
         r = json.loads(p.read_text()); c4[(r['geometry'], r['Q'], r['backend'])].append(r['rmse']['DP-MD-S'])
     with open(d10_csv) as f:
         for r in csv.DictReader(f):
-            if r['geometry'] == 'double_graph': c4[('double_graph', int(r['m']), r['backend'])].append(float(r['DP-MD-S']))
+            if r['geometry'] in ('double_graph', 'bowl4'): c4[(r['geometry'], int(r['m']), r['backend'])].append(float(r['DP-MD-S']))
     return c4
 
 
 def case4_table(c4, TAB):
     write_table(TAB / 'tab_app_release_m.tex', ['Geometry', '$m$', *MODES.values()],
                 [(g, [[f'${m}$', *[fmt(stat(c4[(g, m, b)])) for b in MODES]] for m in (10, 20, 50, 100)])
-                 for g in ('trefoil', 'torus', 'double_graph')])
+                 for g in CASE4_GEOMS])
 
 
 def _style(ax, title):
@@ -219,9 +220,9 @@ def sweep_figure(groups, FIG, which, grid_of, xlabel, path, geometries=MAIN, squ
 
 
 def two_panel_figure(groups, FIG, g, path):
-    """Case 5 / Case 7 (as the disconnected figure of paper_v2): latent RMSE versus n and versus epsilon."""
+    """Case 5 / Case 7: latent RMSE versus epsilon and versus n (panel order as Figure 2)."""
     fig = plt.figure(figsize=(4.8, 2.0))
-    for i, (which, grid, xl) in enumerate((('n', list(NGRID[g]), '$n$'), ('epsilon', list(EPSILONS), EPS_LABEL))):
+    for i, (which, grid, xl) in enumerate((('epsilon', list(EPSILONS), EPS_LABEL), ('n', list(NGRID[g]), '$n$'))):
         ax = fig.add_subplot(1, 2, i + 1)
         cells = [groups[key(g, **{which: x})] for x in grid]
         _line(ax, grid, cells, 'DP-MD-S', BLUE, 'o')
@@ -237,10 +238,10 @@ def two_panel_figure(groups, FIG, g, path):
 
 
 def highd_figure(groups, FIG):
-    """Case 6: trefoil and double-curvature graph against the ambient dimension (proposed estimators only)."""
+    """Case 6: trefoil and bowl against the ambient dimension (proposed estimators only)."""
     Ds = [10, 20, 30, 40, 50]
     fig, axes = plt.subplots(1, 2, figsize=(4.8, 2.0), sharey=True)
-    for ax, (g, n) in zip(axes, (('trefoil', 8000), ('double_graph', 16000))):
+    for ax, (g, n) in zip(axes, (('trefoil', 8000), ('bowl4', 16000))):
         cells = [groups[key(g, D=D, n=n, epsilon=2.)] for D in Ds]
         _line(ax, Ds, cells, 'DP-MD-S', BLUE, 'o')
         _line(ax, Ds, cells, 'NP-MD-S', ORANGE, 's')
@@ -256,8 +257,8 @@ def release_m_figure(c4, FIG, name='sim_release_m_grid.pdf'):
     with ylim (0, TOP); a point above TOP is drawn on the top edge as an open marker with its value above it."""
     ms = [10, 20, 50, 100]; x = np.arange(len(ms))
     colors = dict(structured_shared='#1d4e89', structured_independent='#2a9d8f', structured_per_query='#c8553d')
-    geoms = ('trefoil', 'torus', 'double_graph')
-    fig, axes = plt.subplots(1, 3, figsize=(6.6, 2.1), sharey=True)  # the paper's size
+    geoms = CASE4_GEOMS
+    fig, axes = plt.subplots(1, len(geoms), figsize=(2.2 * len(geoms), 2.1), sharey=True)  # 3 panels: the paper's size
     for ax, g in zip(axes, geoms):
         below = np.zeros(len(ms))
         for b, marker in zip(MODES, 'o^s'):
@@ -283,9 +284,15 @@ def release_m_figure(c4, FIG, name='sim_release_m_grid.pdf'):
     handles.append(Line2D([], [], color=MUTED, linestyle=':', linewidth=1, label='RAW'))
     # the trefoil panel is filled up to the cut, so the legend goes to the free space under the per-query line of
     # the last panel; margins are set by hand (tight_layout ignores the values above the axes)
-    axes[-1].legend(handles=handles, frameon=False, loc='lower right', bbox_to_anchor=(1, .3), ncol=2, columnspacing=.6, fontsize=6.5,
-                    handlelength=1.2, handletextpad=.4, borderaxespad=.1, labelspacing=.25)
-    fig.subplots_adjust(left=.085, right=.99, bottom=.21, top=.79, wspace=.1)
+    if len(geoms) == 3:
+        axes[-1].legend(handles=handles, frameon=False, loc='lower right', bbox_to_anchor=(1, .3), ncol=2, columnspacing=.6, fontsize=6.5,
+                        handlelength=1.2, handletextpad=.4, borderaxespad=.1, labelspacing=.25)
+        fig.subplots_adjust(left=.085, right=.99, bottom=.21, top=.79, wspace=.1)
+    else:  # two panels: no free space inside the axes, one legend row under the panels
+        fig.set_size_inches(2.2 * len(geoms), 2.5)
+        fig.legend(handles=handles, frameon=False, loc='lower center', ncol=4, columnspacing=1.2, fontsize=6.5,
+                   handlelength=1.6, handletextpad=.4)
+        fig.subplots_adjust(left=.13, right=.99, bottom=.3, top=.82, wspace=.1)
     _save(fig, FIG, name)
 
 
@@ -447,10 +454,11 @@ def extra_geometry_figure(names, FIG):
                 show = np.c_[yn[:, 0], np.linalg.norm(y - np.outer(yn[:, 0], B[:, 0]), axis=1)]
                 lat = np.c_[ln[:, 0], 0 * ln[:, 0]]
                 ax.plot([-1, 1], [0, 0], color=INK, linewidth=.9); ax.set_ylim(-.01, .12)
-            elif g == 'flat2':  # true shape: the plane and a fixed normal direction, light wireframe of the square
+            elif g == 'flat2':  # height map: plane coordinates and the residual along a fixed normal direction, stems to the plane
                 B3 = np.linalg.qr(B, mode='complete')[0][:, :3]
-                show, lat = y @ B3, latent @ B3
-                for x in _square_wireframe(): ax.plot(*x.T, color=GRID, linewidth=.6)
+                show = y @ B3; lat = np.c_[show[:, :2], 0 * show[:, 2]]
+                u = np.linspace(-1, 1, 2); ax.plot_surface(*np.meshgrid(u, u), np.zeros((2, 2)), color=GRID, alpha=.35, linewidth=0, shade=False)
+                for x in _square_wireframe(): ax.plot(*x.T, color=GRID, linewidth=.5)
             elif g == 'catenoid':  # true shape in the embedded 3-space, light wireframe of the catenoid
                 show, lat = y @ B, latent @ B
                 for x in _catenoid_wireframe(): ax.plot(*x.T, color=GRID, linewidth=.6)
@@ -460,14 +468,22 @@ def extra_geometry_figure(names, FIG):
             else:
                 show, lat = y @ B, latent @ B
                 ax.plot(*_truth(g).T, color=INK, linewidth=.9)
-            for p, q in zip(show, lat): ax.plot(*np.c_[p, q], color=MUTED, linewidth=.4)
-            ax.scatter(*show.T, s=5, color=(MUTED, BLUE, ORANGE)[mi], **({'depthshade': False} if three else {}))
+            stem = dict(color=(MUTED, BLUE, ORANGE)[mi], linewidth=.6) if g == 'flat2' else dict(color=MUTED, linewidth=.4)
+            for p, q in zip(show, lat): ax.plot(*np.c_[p, q], **stem)
+            ax.scatter(*show.T, s=5, color=(MUTED, BLUE, ORANGE)[mi], **({'depthshade': False} if three else {}),
+                       **({'edgecolors': 'white', 'linewidths': .3} if g == 'flat2' else {}))
             rmse = np.sqrt(np.mean(np.sum((y - latent) ** 2, 1)))
             ax.set_title(f'{LABEL[g]}, {name}: {rmse:.3f}', color=INK, fontsize=7)
-            if three: ax.view_init(20, 35)
+            if three: ax.view_init(*((22, -60) if g == 'flat2' else (20, 35)))
             if g == 'catenoid': ax.set_box_aspect((1, 1, .75), zoom=1.45)
-            if g == 'flat2': ax.set_zlim(-.3, .3); ax.set_box_aspect((1, 1, .3), zoom=1.45)
-            ax.set_axis_off()
+            if g == 'flat2':  # magnified z axis with ticks; x and y unlabelled
+                ax.set_zlim(-.1, .1); ax.set_box_aspect((1, 1, .6), zoom=1.15)
+                ax.set_xticks([]); ax.set_yticks([]); ax.set_zticks([-.08, 0, .08]); ax.set_zticklabels(['$-0.08$', '$0$', '$0.08$'])
+                ax.tick_params(axis='z', labelsize=5, pad=0, colors=MUTED)
+                for axis in (ax.xaxis, ax.yaxis, ax.zaxis): axis.pane.fill = False; axis.pane.set_edgecolor(GRID); axis._axinfo['grid']['color'] = GRID
+                ax.set_xlabel('$x$', fontsize=6, labelpad=-12); ax.set_ylabel('$y$', fontsize=6, labelpad=-12)
+            else:
+                ax.set_axis_off()
             if not three: ax.set_aspect('auto' if g in ('affine', 'flat2', 'swiss3', 'catenoid') else 'equal')
     fig.tight_layout()
     _save(fig, FIG, 'app_sim_extra_geometry.pdf')
